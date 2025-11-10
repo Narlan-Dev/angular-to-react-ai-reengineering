@@ -20,7 +20,7 @@ Um projeto abrangente de pesquisa acadêmica que investiga a eficácia de difere
 ## 📁 Estrutura do Projeto
 
 ```
-TCC - Narlan (BCET)/
+angular-to-react-ai-reengineering/
 ├── Search/                          # Dados de pesquisa e análises
 │   ├── Angular/                     # Códigos originais Angular
 │   │   ├── Complex/                 # Códigos complexos (Code-1 a Code-10)
