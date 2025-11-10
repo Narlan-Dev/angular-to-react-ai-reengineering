@@ -1,0 +1,330 @@
+<div class="page-wrapper">
+  <div class="page-breadcrumb">
+    <div class="row">
+      <div class="col-12 d-flex no-block align-items-center">
+        <h4 class="page-title">Rotinas</h4>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div [hidden]="!(isAdmin$ | async)" class="d-flex flex-column h-padding">
+      <div>
+        <label>Escolha o evento</label>
+      </div>
+      <div>
+        <select
+          class="select2 form-control select2-hidden-accessible font-big"
+          style="width: 100%; height: 36px"
+          aria-hidden="true"
+          [(ngModel)]="selectedEvent"
+          (ngModelChange)="loadRoutinesByEvent($event)"
+        >
+          <option [ngValue]="null"></option>
+          <option *ngFor="let e of events; let i = index" [ngValue]="e">
+            {{ e.short_name }}
+          </option>
+        </select>
+      </div>
+      <div *ngIf="selectedEvent" class="routine-title">
+        <label>Escolha o tipo de rotina</label>
+      </div>
+      <div class="row flex-row justify-content-center" *ngIf="selectedEvent">
+        <div class="col-md-2">
+          <a (click)="handleAssignmentReviewers()">
+            <div class="card card-hover">
+              <div class="box bg-cyan text-center">
+                <h1 class="font-light text-white">
+                  <i class="mdi mdi-crosshairs"></i>
+                </h1>
+                <h6 class="text-white">
+                  Atribuição automática <br />
+                  de revisores
+                </h6>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-2">
+          <a (click)="handleGenerateCertificates()">
+            <div class="card card-hover">
+              <div class="box bg-warning text-center">
+                <h1 class="font-light text-white">
+                  <i class="mdi mdi-account-switch"></i>
+                </h1>
+                <h6 class="text-white">
+                  Gerar <br />
+                  certificados
+                </h6>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-2">
+          <a (click)="handleImportAssignments()">
+            <div class="card card-hover">
+              <div class="box bg-info text-center">
+                <h1 class="font-light text-white">
+                  <i class="mdi mdi-crosshairs"></i>
+                </h1>
+                <h6 class="text-white">
+                  Importar <br />
+                  atribuições
+                </h6>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-2">
+          <a (click)="handleImportExemptions()">
+            <div class="card card-hover">
+              <div class="box bg-success text-center">
+                <h1 class="font-light text-white">
+                  <i class="mdi mdi-cash"></i>
+                </h1>
+                <h6 class="text-white">
+                  Importar <br />
+                  participantes isentos
+                </h6>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <mat-tab-group [hidden]="routines.length <= 0" [selectedIndex]="tabIndex">
+        <mat-tab label="Rotinas solicitadas">
+          <div [hidden]="routines.length <= 0 || loading" class="card">
+            <div class="card-body">
+              <form [formGroup]="searchForm" class="row">
+                <div class="col-11">
+                  <mat-form-field style="width: 100%">
+                    <mat-label>Digite sua busca</mat-label>
+                    <input
+                      matInput
+                      type="text"
+                      id="search"
+                      name="search"
+                      formControlName="search"
+                      class="search-input"
+                      (keyup.enter)="search()"
+                      [ngClass]="{ 'is-invalid': f.search.errors }"
+                    />
+                    <mat-error> Nenhuma correspondência obtida </mat-error>
+                  </mat-form-field>
+                </div>
+                <div class="col-1 container_buttons justify-end-safe">
+                  <div class="button_save">
+                    <button
+                      (click)="search()"
+                      [disabled]="loading"
+                      class="btn btn-secondary btn-md"
+                      type="button"
+                    >
+                      {{ loading ? "Aguarde..." : "Buscar" }}
+                    </button>
+                  </div>
+                  <div class="button_save">
+                    <button
+                      (click)="loadRoutinesByEvent(selectedEvent)"
+                      [disabled]="loading"
+                      class="btn btn-info btn-md"
+                      type="button"
+                    >
+                      {{ loading ? "Atualizando..." : "Atualizar Tabela" }}
+                    </button>
+                  </div>
+                </div>
+              </form>
+              <div
+                class="col-12 row top-spacing"
+                style="width: 100%; overflow-x: scroll"
+              >
+                <table
+                  mat-table
+                  [dataSource]="adminDataSource"
+                  matSort
+                  matSortActive="created_at"
+                  matSortDirection="desc"
+                >
+                  <ng-container matColumnDef="counter">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+                    <td mat-cell *matCellDef="let element; let i = index">
+                      {{ i + 1 }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="type">
+                    <th
+                      mat-header-cell
+                      *matHeaderCellDef
+                      mat-sort-header
+                      class="center"
+                    >
+                      Tipo de rotina
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                      {{ element.type }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="created_by">
+                    <th
+                      mat-header-cell
+                      *matHeaderCellDef
+                      mat-sort-header
+                      class="center"
+                    >
+                      Criador
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                      {{
+                        element.created_by.name ? element.created_by.name : ""
+                      }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="created_at">
+                    <th
+                      mat-header-cell
+                      *matHeaderCellDef
+                      mat-sort-header="created_at"
+                      class="center"
+                    >
+                      Iniciada
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                      {{ element.created_at | date : "dd/MM/yyyy HH:mm" }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="finished_at">
+                    <th
+                      mat-header-cell
+                      *matHeaderCellDef
+                      mat-sort-header="finished_at"
+                      class="center"
+                    >
+                      Finalizada
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                      {{ element.finished_at | date : "dd/MM/yyyy HH:mm" }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="status">
+                    <th
+                      mat-header-cell
+                      *matHeaderCellDef
+                      mat-sort-header
+                      class="center"
+                    >
+                      Status
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                      <span
+                        [ngStyle]="{
+                          'background-color':
+                            element.status === 'Criada'
+                              ? '#fff3cd'
+                              : element.status === 'Em processamento'
+                              ? '#e9ecef'
+                              : element.status === 'Erro'
+                              ? '#f8d7da'
+                              : element.status === 'Sucesso'
+                              ? '#d4edda'
+                              : '',
+                          color:
+                            element.status === 'Criada'
+                              ? '#856404'
+                              : element.status === 'Em processamento'
+                              ? '#383d41'
+                              : element.status === 'Erro'
+                              ? '#721c24'
+                              : element.status === 'Sucesso'
+                              ? '#155724'
+                              : '',
+                          padding: '4px 8px',
+                          'border-radius': '4px'
+                        }"
+                      >
+                        {{ element.status }}
+                      </span>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="button_details">
+                    <th
+                      mat-header-cell
+                      *matHeaderCellDef
+                      mat-sort-header
+                      class="center"
+                    ></th>
+                    <td
+                      mat-cell
+                      *matCellDef="let element"
+                      (click)="
+                        element.status !== 'Criada' &&
+                        element.status !== 'Em processamento'
+                          ? openRoutineDetailsDialog(element)
+                          : null
+                      "
+                    >
+                      <h3>
+                        <i
+                          matTooltip="Visualizar detalhes"
+                          class="mdi mdi-eye"
+                          [ngStyle]="{
+                            cursor:
+                              element.status !== 'Criada' &&
+                              element.status !== 'Em processamento'
+                                ? 'pointer'
+                                : 'not-allowed',
+                            opacity:
+                              element.status !== 'Criada' &&
+                              element.status !== 'Em processamento'
+                                ? 1
+                                : 0.5
+                          }"
+                        ></i>
+                        <span class="subtitle"> Detalhes</span>
+                      </h3>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr
+                    mat-row
+                    *matRowDef="
+                      let row;
+                      columns: displayedColumns
+                        | paginate
+                          : {
+                              itemsPerPage: pageSize,
+                              currentPage: currentPage,
+                              totalItems: totalItems
+                            }
+                    "
+                  ></tr>
+                </table>
+              </div>
+              <div class="text-right">
+                <pagination-controls
+                  previousLabel="Anterior"
+                  nextLabel="Próximo"
+                  (pageChange)="currentPage = $event; paginate(currentPage)"
+                ></pagination-controls>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+      <div *ngIf="(isAdmin$ | async) && loading">
+        <mat-progress-spinner
+          [diameter]="40"
+          color="primary"
+          mode="indeterminate"
+        >
+        </mat-progress-spinner>
+      </div>
+    </div>
+  </div>
+</div>

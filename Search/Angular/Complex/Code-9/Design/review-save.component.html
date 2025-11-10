@@ -1,0 +1,268 @@
+<div class="page-wrapper">
+  <div class="page-breadcrumb">
+    <div class="row">
+      <div class="col-12 d-flex no-block align-items-center">
+        <h4 class="page-title">Revisar trabalho</h4>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="!loading; else emptyBlock" class="container-fluid">
+    <div class="card">
+      <form
+        [formGroup]="reviewForm"
+        (ngSubmit)="onSubmit()"
+        class="form-horizontal"
+      >
+        <div class="card-body">
+          <div class="form-group row align-items-center">
+            <label
+              for="title"
+              class="col-sm-3 text-right control-label col-form-label"
+              >Título:</label
+            >
+            <div id="title" class="col-sm-9">
+              {{ submissionReview.submission.title }}
+            </div>
+          </div>
+          <div class="form-group row align-items-center">
+            <label
+              for="keywords"
+              class="col-sm-3 text-right control-label col-form-label"
+              >Palavras-chave:</label
+            >
+            <div id="keywords" class="col-sm-9">
+              {{ submissionReview.submission.keywords }}
+            </div>
+          </div>
+          <div class="form-group row">
+            <label
+              for="abstract"
+              class="col-sm-3 text-right control-label col-form-label"
+              >Resumo:</label
+            >
+            <div id="abstract" class="col-sm-8" style="text-align: justify">
+              <div [innerHtml]="submissionReview.submission.abstract"></div>
+            </div>
+          </div>
+
+          <div
+            class="form-group row align-items-center"
+            *ngIf="submissionReview.submission.file"
+          >
+            <label
+              for="file"
+              class="col-sm-3 text-right control-label col-form-label"
+              >Arquivo da Submissão:</label
+            >
+            <div id="file" class="col-sm-3">
+              <button
+                type="button"
+                class="btn btn-success"
+                type="button"
+                (click)="downloadSubmissionFile(submissionReview.submission)"
+              >
+                Download
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group row align-items-center">
+            <label
+              for="event"
+              class="col-sm-3 text-right control-label col-form-label"
+              >Evento:</label
+            >
+            <div id="event" class="col-sm-9">
+              {{ submissionReview.submission.event_short_name }}
+            </div>
+          </div>
+          <div class="form-group row align-items-center">
+            <label
+              for="track"
+              class="col-sm-3 text-right control-label col-form-label"
+              >Trilha:</label
+            >
+            <div id="track" class="col-sm-9">
+              {{ submissionReview.submission.event_track_name }}
+            </div>
+          </div>
+          <div class="form-group row align-items-center">
+            <label
+              for="area"
+              class="col-sm-3 text-right control-label col-form-label"
+              >Área de Conhecimento:</label
+            >
+            <div id="area" class="col-sm-9">
+              {{ submissionReview.submission.knowledge_area }}
+            </div>
+          </div>
+          <div
+            [hidden]="
+              submissionReview.submission?.additionalQuestionsAnswers.length <=
+              0
+            "
+            *ngFor="
+              let questionAnswer of submissionReview.submission
+                ?.additionalQuestionsAnswers
+            "
+            class="form-group"
+          >
+            <div class="form-group row align-items-center">
+              <label
+                for="area"
+                class="col-sm-3 text-right control-label col-form-label"
+                >{{ questionAnswer.question.title }}</label
+              >
+              <div id="area" class="col-sm-9">
+                {{ questionAnswer.answer }}
+              </div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label
+              for="result"
+              class="col-sm-3 text-right control-label col-form-label"
+              >Parecer:</label
+            >
+            <div id="result" class="col-sm-9 container">
+              <textarea
+                type="text"
+                id="feedback"
+                placeholder="Informe seu parecer"
+                formControlName="feedback"
+                [ngClass]="{ 'is-invalid': submitted && f.feedback.errors }"
+                class="md-textarea md-textarea-auto form-control"
+                mdbInput
+              ></textarea>
+              <div
+                *ngIf="submitted && f.feedback.errors"
+                class="invalid-feedback"
+              >
+                <div *ngIf="f.feedback.errors.required">
+                  Informe o parecer da submissão
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            *ngIf="track.additionalQuestionReviewer"
+            class="form-group row align-items-center"
+          >
+            <label
+              for="approved"
+              class="col-sm-3 text-right control-label col-form-label"
+              >{{ track.additionalQuestionReviewer }}</label
+            >
+            <div id="approved" class="col-sm-9">
+              <div class="row justify-content-start align-items-center">
+                <div class="h-padding">Não</div>
+                <mat-slide-toggle
+                  id="answerForQuestionTrack"
+                  formControlName="answerForQuestionTrack"
+                  class="tp-margin"
+                  [checked]="f.answerForQuestionTrack.value"
+                  [ngClass]="{
+                    'is-invalid': submitted && f.answerForQuestionTrack.errors
+                  }"
+                >
+                </mat-slide-toggle>
+                <div class="h-padding">Sim</div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            *ngIf="track.secondAdditionalQuestionReviewer"
+            class="form-group row align-items-center"
+          >
+            <label
+              for="approved"
+              class="col-sm-3 text-right control-label col-form-label"
+              >{{ track.secondAdditionalQuestionReviewer }}</label
+            >
+            <div id="approved" class="col-sm-9">
+              <div class="row justify-content-start align-items-center">
+                <div class="h-padding">Não</div>
+                <mat-slide-toggle
+                  id="answerForSecondQuestionTrack"
+                  formControlName="answerForSecondQuestionTrack"
+                  class="tp-margin"
+                  [checked]="f.answerForSecondQuestionTrack.value"
+                  [ngClass]="{
+                    'is-invalid':
+                      submitted && f.answerForSecondQuestionTrack.errors
+                  }"
+                >
+                </mat-slide-toggle>
+                <div class="h-padding">Sim</div>
+              </div>
+            </div>
+          </div>
+
+          <app-question-main
+            #questionMainComponent
+            *ngIf="questions && questions.length > 0"
+            [questions]="questions"
+            [submitted]="submitted"
+            formControlName="questions"
+          >
+          </app-question-main>
+
+          <div class="form-group row align-items-center">
+            <label
+              for="approved"
+              class="col-sm-3 text-right control-label col-form-label"
+              >Resultado:</label
+            >
+            <div id="approved" class="col-sm-9">
+              <div class="row justify-content-start align-items-center">
+                <div class="h-padding">Reprovado</div>
+                <mat-slide-toggle
+                  id="status_approved"
+                  formControlName="status"
+                  class="tp-margin"
+                  [checked]="f.status.value"
+                  color="primary"
+                  [ngClass]="{ 'is-invalid': submitted && f.status.errors }"
+                >
+                </mat-slide-toggle>
+                <div class="h-padding">Aprovado</div>
+              </div>
+              <div
+                *ngIf="submitted && f.status.errors"
+                class="invalid-feedback"
+              >
+                <div *ngIf="f.status.errors.required">
+                  Informe o status da submissão
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="border-top">
+            <div class="card-body">
+              <button
+                type="button"
+                (click)="onSubmit()"
+                class="btn btn-primary"
+              >
+                Salvar
+              </button>
+              <button
+                type="button"
+                (click)="cancelReview()"
+                class="btn btn-danger"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <ng-template #emptyBlock>
+    <mat-progress-spinner [diameter]="40" color="primary" mode="indeterminate">
+    </mat-progress-spinner>
+  </ng-template>
+</div>

@@ -1,0 +1,233 @@
+<!-- Page wrapper  -->
+<!-- ============================================================== -->
+<div class="page-wrapper">
+  <!-- ============================================================== -->
+  <!-- End Bread crumb and right sidebar toggle -->
+  <!-- ============================================================== -->
+  <!-- ============================================================== -->
+  <!-- Container fluid  -->
+  <!-- ============================================================== -->
+  <div class="container-fluid">
+    <!-- ============================================================== -->
+    <!-- Start Page Content -->
+    <!-- ============================================================== -->
+    <div
+      *ngIf="isAdmin$ | async; else loadReviewerInfo"
+      class="row justify-content-center options-row"
+    >
+      <!--
+      <div class="col-md-2">
+        <a
+          [routerLink]="[
+            '/home',
+            { outlets: { content: ['assign-reviewers-automatically'] } }
+          ]"
+        >
+          <div class="card card-hover">
+            <div class="box bg-info text-center">
+              <h1 class="font-light text-white">
+                <i class="mdi mdi-crosshairs"></i>
+              </h1>
+              <h6 class="text-white">
+                Atribuição automática <br />
+                de revisores
+              </h6>
+            </div>
+          </div>
+        </a>
+      </div>
+      -->
+      <div class="col-md-2">
+        <a
+          [routerLink]="[
+            '/home',
+            {
+              outlets: {
+                content: [
+                  'choose-track',
+                  {
+                    destinationRoute: 'assign-reviewer',
+                    title: 'Atribuir submissão ao revisor',
+                    eventServiceRoute: 'on_review'
+                  }
+                ]
+              }
+            }
+          ]"
+        >
+          <div class="card card-hover">
+            <div class="box bg-warning text-center">
+              <h1 class="font-light text-white">
+                <i class="mdi mdi-account-edit"></i>
+              </h1>
+              <h6 class="text-white">
+                Atribuir submissão <br />
+                ao revisor
+              </h6>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-2">
+        <a
+          [routerLink]="['/home', { outlets: { content: ['panel-reviewer'] } }]"
+        >
+          <div class="card card-hover">
+            <div class="box bg-cyan text-center">
+              <h1 class="font-light text-white">
+                <i class="mdi mdi-pencil-box-outline"></i>
+              </h1>
+              <h6 class="text-white">
+                Minhas <br />
+                revisões
+              </h6>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-2">
+        <a
+          [routerLink]="[
+            '/home',
+            {
+              outlets: {
+                content: [
+                  'choose-track',
+                  {
+                    destinationRoute: 'review-status',
+                    title: 'Trabalhos aprovados',
+                    statusReview: 'true',
+                    eventServiceRoute: 'no_pagination'
+                  }
+                ]
+              }
+            }
+          ]"
+        >
+          <div class="card card-hover">
+            <div class="box bg-success text-center">
+              <h1 class="font-light text-white">
+                <i class="mdi mdi-checkbox-marked-outline"></i>
+              </h1>
+              <h6 class="text-white">
+                Trabalhos <br />
+                aprovados
+              </h6>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-2">
+        <a
+          [routerLink]="[
+            '/home',
+            {
+              outlets: {
+                content: [
+                  'choose-track',
+                  {
+                    destinationRoute: 'review-status',
+                    title: 'Trabalhos reprovados',
+                    statusReview: 'false',
+                    eventServiceRoute: 'no_pagination'
+                  }
+                ]
+              }
+            }
+          ]"
+        >
+          <div class="card card-hover">
+            <div class="box bg-danger text-center">
+              <h1 class="font-light text-white">
+                <i class="mdi mdi-close-box-outline"></i>
+              </h1>
+              <h6 class="text-white">
+                Trabalhos <br />
+                reprovados
+              </h6>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <ng-template #loadReviewerInfo>
+      <app-reviewer-panel [subPage]="true"></app-reviewer-panel>
+    </ng-template>
+
+    <div
+      *ngIf="(isAdmin$ | async) && !loading"
+      class="d-flex flex-column h-padding"
+    >
+      <div>
+        <label>Revisões por evento</label>
+      </div>
+      <div>
+        <select
+          class="select2 form-control select2-hidden-accessible font-big"
+          style="width: 100%; height: 36px"
+          aria-hidden="true"
+          [(ngModel)]="selectedEvent"
+        >
+          <option [ngValue]="null"></option>
+          <option *ngFor="let e of events" [ngValue]="e">
+            {{ e.short_name }}
+          </option>
+        </select>
+      </div>
+      <div
+        *ngIf="selectedEvent && selectedEvent.tracks.length > 0"
+        class="track-title"
+      >
+        <label>Escolha a trilha do evento</label>
+      </div>
+      <div class="row flex-row justify-content-center" *ngIf="selectedEvent">
+        <div
+          *ngFor="let t of selectedEvent.tracks"
+          class="card card-hover col-md-2 margin"
+          [style.background-color]="
+            t.color !== '#fff' && t.color !== '#ffffff' ? t.color : '#000'
+          "
+        >
+          <a (click)="loadSubmissionsByTrack(t)">
+            <div class="box text-center">
+              <h1 class="font-light text-white">
+                <i class="mdi mdi-note-multiple"></i>
+              </h1>
+              <h6 class="text-white">{{ t.name }}</h6>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div
+        *ngIf="selectedEvent && selectedEvent.tracks.length <= 0"
+        class="empty-block"
+      >
+        Não existem trilhas cadastradas para prosseguir com a operação
+      </div>
+      <div *ngIf="track !== null">
+        <div class="row justify-content-end h-padding new-button-padding">
+          <button
+            (click)="downloadSubmissions()"
+            [disabled]="downloading"
+            class="btn btn-primary btn-md right-margin"
+            type="button"
+          >
+            {{ downloading ? "Aguarde..." : "Baixar relatório" }}
+          </button>
+        </div>
+        <app-reviewer-panel
+          [track]="track"
+          [subPage]="true"
+        ></app-reviewer-panel>
+      </div>
+    </div>
+    <div *ngIf="(isAdmin$ | async) && loading">
+      <mat-progress-spinner
+        [diameter]="40"
+        color="primary"
+        mode="indeterminate"
+      >
+      </mat-progress-spinner>
+    </div>
+  </div>
+</div>

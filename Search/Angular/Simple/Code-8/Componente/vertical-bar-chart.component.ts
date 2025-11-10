@@ -1,0 +1,54 @@
+import { Component, Input, KeyValueDiffers, DoCheck } from "@angular/core";
+import { Chart } from "chart.js/auto";
+import ChartModel from "../../models/Chart.model";
+
+@Component({
+  selector: "app-vertical-bar-chart",
+  templateUrl: "./vertical-bar-chart.component.html",
+  styleUrls: ["./vertical-bar-chart.component.css"],
+  standalone: false,
+})
+export class VerticalBarChartComponent implements DoCheck {
+  @Input() chart: ChartModel;
+  differ: any;
+
+  constructor(private differs: KeyValueDiffers) {
+    this.differ = differs.find({}).create();
+  }
+
+  ngDoCheck() {
+    var changes = this.differ.diff(this.chart);
+
+    if (changes) {
+      if (this.chart.data) {
+        setTimeout(() => {
+          this.generateVerticalBarChart(this.chart.data);
+        }, 200);
+      }
+    }
+  }
+  generateVerticalBarChart = (data) => {
+    return new Chart("vertial_bar_chart", {
+      type: "bar",
+      data: {
+        labels: data.map((item) => item.title),
+        datasets: [
+          {
+            label: this.chart.columns[0],
+            data: data.map((item) => item.value),
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+      },
+    });
+  };
+}

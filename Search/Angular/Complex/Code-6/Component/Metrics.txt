@@ -1,0 +1,5 @@
+// Metrics
+Linhas de Código (LOC)	460
+Complexidade Ciclomática (CC)	8 (Valor máximo na função getSubmissionStatus)
+Índice de Manutenibilidade (MI)	50 / 100 📉
+Repetição de Código	~30%

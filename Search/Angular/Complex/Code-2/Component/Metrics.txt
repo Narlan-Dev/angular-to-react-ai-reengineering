@@ -1,0 +1,5 @@
+// Metrics
+Linhas de Código (LOC)	209
+Complexidade Ciclomática (CC)	4 (Valor máximo por função)
+Índice de Manutenibilidade (MI)	85 / 100
+Repetição de Código	< 5%

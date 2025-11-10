@@ -1,0 +1,103 @@
+<div *ngFor="let question of questions" class="form-group row">
+  <label class="col-sm-3 text-right control-label col-form-label">{{
+    question.title
+  }}</label>
+
+  <div class="col-sm-9">
+    <div class="d-flex flex-column">
+      <!-- Container principal com flex-column para empilhar os elementos verticalmente -->
+      <div class="d-flex align-items-center">
+        <ng-container [ngSwitch]="question.type">
+          <select
+            *ngSwitchCase="'0_to_5'"
+            class="form-control col-sm-2"
+            [formControl]="getQuestionControl(question._id)"
+            [ngClass]="{
+              'is-invalid': submitted && getQuestionControl(question._id).errors
+            }"
+          >
+            <option *ngFor="let val of [1, 2, 3, 4, 5]" [value]="val">
+              {{ val }}
+            </option>
+          </select>
+
+          <input
+            *ngSwitchCase="'0_to_100'"
+            type="number"
+            class="form-control col-sm-2"
+            [formControl]="getQuestionControl(question._id)"
+            [placeholder]="question.description"
+            [ngClass]="{
+              'is-invalid': submitted && getQuestionControl(question._id).errors
+            }"
+            min="0"
+            max="100"
+          />
+
+          <textarea
+            *ngSwitchCase="'long_text'"
+            rows="3"
+            class="form-control"
+            [formControl]="getQuestionControl(question._id)"
+            [placeholder]="question.description"
+            [ngClass]="{
+              'is-invalid': submitted && getQuestionControl(question._id).errors
+            }"
+          ></textarea>
+
+          <input
+            *ngSwitchDefault
+            type="text"
+            class="form-control"
+            [formControl]="getQuestionControl(question._id)"
+            [placeholder]="question.description"
+            [ngClass]="{
+              'is-invalid': submitted && getQuestionControl(question._id).errors
+            }"
+          />
+        </ng-container>
+
+        <!-- Ícone de interrogação com tooltip -->
+        <div
+          *ngIf="
+            question.description &&
+            (question.type === '0_to_5' || question.type === '0_to_100')
+          "
+          class="ml-2 cursor-pointer"
+          title="{{ question.description }}"
+          style="color: #3e5569"
+        >
+          <i class="fas fa-question-circle"></i>
+        </div>
+      </div>
+
+      <!-- Mensagens de erro agora abaixo do campo -->
+      <div
+        *ngIf="submitted && getQuestionControl(question._id).invalid"
+        class="invalid-feedback d-block mt-1"
+      >
+        <div *ngIf="getQuestionControl(question._id).errors?.required">
+          Esse campo é obrigatório
+        </div>
+        <div
+          *ngIf="
+            getQuestionControl(question._id).errors?.min ||
+            getQuestionControl(question._id).errors?.max
+          "
+        >
+          Valor inválido
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="questions[0].model === 'reviewer' && hasWeightQuestions()"
+  class="form-group row"
+>
+  <label class="col-sm-3 text-right control-label col-form-label">Total:</label>
+  <div class="col-sm-1">
+    <input type="text" class="form-control" [value]="total" readonly />
+  </div>
+</div>

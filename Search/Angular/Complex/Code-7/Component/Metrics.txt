@@ -1,0 +1,5 @@
+// Metrics
+Linhas de Código (LOC)	870+
+Complexidade Ciclomática (CC)	30+ (Valor máximo na função onSubmit)
+Índice de Manutenibilidade (MI)	15 / 100 🚨
+Repetição de Código	~30%

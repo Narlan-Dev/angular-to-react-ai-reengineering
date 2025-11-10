@@ -1,0 +1,52 @@
+<div mat-dialog-content>
+  <a class="mdi mdi-close-circle close" (click)="onNoClick()"></a>
+  <div class="title">
+    <label
+      >Selecione o arquivo com as {{ responseData.type }} a serem
+      importadas</label
+    >
+  </div>
+  <form [formGroup]="uploadAssignmentForm" class="form-horizontal">
+    <div class="form-group row">
+      <div class="col-md-12">
+        <input
+          type="file"
+          class="form-control"
+          id="uploadAssignment"
+          (change)="onAssignmentModelFileChange($event)"
+          accept=".xls,.xlsx"
+          [ngClass]="{
+            'is-invalid': f.uploadAssignment.errors
+          }"
+        />
+        <div *ngIf="f.uploadAssignment.errors" class="invalid-feedback">
+          <div>Necessário fonecer arquivo de atribuições.</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-md-12 row" style="justify-content: end; gap: 1rem">
+        <div class="button_save">
+          <button
+            (click)="onCancel()"
+            [disabled]="loading"
+            class="btn btn-danger btn-md"
+            type="button"
+          >
+            {{ loading ? "Aguarde..." : "Cancelar" }}
+          </button>
+        </div>
+        <div class="button_save">
+          <button
+            (click)="onConfirm()"
+            [disabled]="loading"
+            class="btn btn-info btn-md"
+            type="button"
+          >
+            {{ loading ? "Atualizando..." : "Confirmar" }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

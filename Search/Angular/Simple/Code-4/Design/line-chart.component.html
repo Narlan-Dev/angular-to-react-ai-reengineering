@@ -1,0 +1,41 @@
+<div class="card">
+  <div
+    class="card-body d-flex text-center justify-content-center p-4"
+    style="height: 350px; user-select: none; flex-direction: column"
+  >
+    <div *ngIf="chart.status.isEmpty; else NotEmpty" class="my-auto">
+      Não existem dados para o filtro atual
+    </div>
+    <ng-template #NotEmpty>
+      <div
+        *ngIf="chart.status.hasErrors; else NotError"
+        class="my-auto"
+        style="color: red"
+      >
+        Houve um erro ao obter os dados de
+        <div class="text-lowercase">{{ chart.label }}</div>
+        <!-- //TODO Adiciona um botão de tentar novamente -->
+      </div>
+      <ng-template #NotError>
+        <div
+          *ngIf="chart.status.fetching; else Sucess"
+          class="my-auto"
+          style="color: red"
+        >
+          <div [hidden]="!chart.status.fetching">
+            <mat-progress-spinner
+              [diameter]="40"
+              color="primary"
+              mode="indeterminate"
+            >
+            </mat-progress-spinner>
+          </div>
+        </div>
+        <ng-template #Sucess>
+          <h5 class="card-title">{{ chart.label }}</h5>
+          <canvas id="{{ chart.ctx || chart.label }}"></canvas>
+        </ng-template>
+      </ng-template>
+    </ng-template>
+  </div>
+</div>

@@ -1,0 +1,6 @@
+// Metrics
+Linhas de Código (LOC)	133
+Complexidade Ciclomática (CC)	3 (Valor máximo na função sendSubmissionResultByEmail)
+Índice de Manutenibilidade (MI)	95 / 100
+Repetição de Código	< 5%
+

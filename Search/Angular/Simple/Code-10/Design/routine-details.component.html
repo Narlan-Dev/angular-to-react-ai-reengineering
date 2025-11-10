@@ -1,0 +1,193 @@
+<div mat-dialog-content>
+  <a class="mdi mdi-close-circle close" (click)="onNoClick()"></a>
+  <div class="title">
+    {{ routine.event.name }}
+  </div>
+
+  <div *ngIf="routine.status === 'Erro'" class="error-message">
+    <div class="role-label">{{ routine.details.error }}</div>
+  </div>
+
+  <div
+    *ngIf="
+      routine.status !== 'Erro' && routine.type === 'Geração de certificados'
+    "
+    class="information"
+  >
+    <div class="row">
+      <div class="role-label col-4 line-title">Certificados Gerados</div>
+      <div class="role-label col-8">{{ routine.details.total }}</div>
+    </div>
+
+    <div *ngIf="routine.details.participate" class="row">
+      <div class="role-label col-4 line-title">Participação no evento</div>
+      <div class="role-label col-8">{{ routine.details.participate }}</div>
+    </div>
+
+    <div *ngIf="routine.details.session" class="row">
+      <div class="role-label col-4 line-title">Grupo de sessão</div>
+      <div class="role-label col-8">{{ routine.details.session }}</div>
+    </div>
+
+    <div *ngIf="routine.details.presentation" class="row">
+      <div class="role-label col-4 line-title">Apresentação</div>
+      <div class="role-label col-8">{{ routine.details.presentation }}</div>
+    </div>
+
+    <div *ngIf="routine.details.revision" class="row">
+      <div class="role-label col-4 line-title">Revisão</div>
+      <div class="role-label col-8">{{ routine.details.revision }}</div>
+    </div>
+
+    <div *ngIf="routine.details.revisionPresentation" class="row">
+      <div class="role-label col-4 line-title">Revisão de apresentação</div>
+      <div class="role-label col-8">
+        {{ routine.details.revisionPresentation }}
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="routine.status !== 'Erro' && routine.type === 'Importações'"
+    class="information"
+  >
+    <div class="row">
+      <div class="role-label col-4 line-title">Avaliadores importados</div>
+      <div class="role-label col-8">
+        {{ routine.details.appraisers }}/{{ routine.details.total_appraisers }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="role-label col-4 line-title">Avaliadores não encontrados</div>
+      <div class="role-label col-8">
+        {{ routine.details.appraisers_not_found }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="role-label col-4 line-title">Atribuições importadas</div>
+      <div class="role-label col-8">
+        {{ routine.details.assignments }}/{{
+          routine.details.total_assignments
+        }}
+      </div>
+    </div>
+
+    <div
+      *ngIf="routine.details.warnings && routine.details.warnings.length > 0"
+      class="row"
+    >
+      <div class="role-label col-4 line-title">Avisos</div>
+      <div class="role-label col-8">
+        <ul class="warnings-list">
+          <li *ngFor="let warning of routine.details.warnings">
+            {{ warning.message }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="
+      routine.status !== 'Erro' && routine.type === 'Importação de isentos'
+    "
+    class="information"
+  >
+    <div class="row">
+      <div class="role-label col-4 line-title">Isentos importados</div>
+      <div class="role-label col-8">
+        {{ routine.details.cpf_exemptions }}/{{
+          routine.details.total_cpf_exemptions
+        }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="role-label col-4 line-title">Isentos não encontrados</div>
+      <div class="role-label col-8">
+        {{ routine.details.cpf_exemptions_not_found }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="role-label col-4 line-title">Isentos repetidos</div>
+      <div class="role-label col-8">
+        {{ routine.details.cpf_exemptions_repeated }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="role-label col-4 line-title">Importações com sucesso</div>
+      <div class="role-label col-8">
+        {{ routine.details.success_rate }}
+      </div>
+    </div>
+
+    <div
+      *ngIf="routine.details.warnings && routine.details.warnings.length > 0"
+      class="row"
+    >
+      <div class="role-label col-4 line-title">Avisos</div>
+      <div class="role-label col-8">
+        <ul class="warnings-list">
+          <li *ngFor="let warning of routine.details.warnings">
+            {{ warning.message }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="
+      routine.status !== 'Erro' && routine.type === 'Atribuição de revisores'
+    "
+    class="information"
+  >
+    <div class="row">
+      <div class="role-label col-4 line-title">
+        Submissões com revisores atribuídos:
+      </div>
+      <div class="role-label col-8">
+        {{ routine.details?.submissionsReviewersSet?.length }}/{{
+          routine.details?.submissionsReviewersSet?.length +
+            routine.details?.submissionsNoReviewersSet?.length
+        }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="role-label col-4 line-title">
+        Áreas de conhecimento sem revisores:
+      </div>
+      <div class="role-label col-8">
+        {{ routine.details?.knowledgeAreaWithNoReviewer?.length }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="role-label col-4 line-title">
+        Revisores com quantidade máxima de atribuições atingida:
+      </div>
+      <div class="role-label col-8">
+        {{ routine.details?.reviewerWithMaxReviews?.length }}
+      </div>
+    </div>
+
+    <div
+      *ngIf="routine.details.warnings && routine.details.warnings.length > 0"
+      class="row"
+    >
+      <div class="role-label col-4 line-title">Avisos</div>
+      <div class="role-label col-8">
+        <ul class="warnings-list">
+          <li *ngFor="let warning of routine.details.warnings">
+            {{ warning }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

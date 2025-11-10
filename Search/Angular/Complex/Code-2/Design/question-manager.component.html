@@ -1,0 +1,185 @@
+<div [hidden]="questions.length <= 0" class="card">
+  <div class="card-body questions-container">
+    <div class="container-fluid">
+      <div [hidden]="!loading">
+        <mat-progress-spinner
+          [diameter]="40"
+          color="primary"
+          mode="indeterminate"
+        >
+        </mat-progress-spinner>
+      </div>
+      <div [hidden]="loading">
+        <div
+          class="container-fluid col-12 row"
+          style="justify-content: space-between"
+        >
+          <div class="col-10 form-container">
+            <input
+              type="text"
+              id="search"
+              name="search"
+              class="form-control form-question-container"
+              [placeholder]="submitted ? '' : ''"
+              (keyup)="applyFilterQuestion($event.target.value)"
+            />
+            <label for="search">Digite sua busca</label>
+          </div>
+          <div class="button_save">
+            <button
+              type="button"
+              class="btn btn-outline-info btn-md"
+              style="width: 100%; white-space: normal; word-wrap: break-word"
+              (click)="openQuestionSaveDialog()"
+              [disabled]="loading"
+            >
+              Adicionar pergunta
+            </button>
+          </div>
+        </div>
+        <div
+          class="col-sm-12 row top-spacing"
+          style="width: 100%; overflow-x: auto"
+        >
+          <table
+            mat-table
+            matSort
+            [dataSource]="dataSource"
+            class="responsive-table"
+          >
+            <!-- Description column -->
+            <ng-container matColumnDef="description">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="header-color text-align-left"
+              >
+                Descrição
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let element"
+                class="description-cell text-align-left"
+              >
+                <span *ngIf="!element.description" style="opacity: 0.6">
+                  Descrição não disponível
+                </span>
+                <span *ngIf="element.description">
+                  {{ element.description }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Title Column -->
+            <ng-container matColumnDef="title">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="header-color text-align-left"
+              >
+                Título
+              </th>
+              <td mat-cell *matCellDef="let element" class="text-align-left">
+                {{ element.title }}
+              </td>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="weight">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="header-color text-align-left"
+              >
+                Peso
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let element"
+                class="description-cell text-align-left"
+              >
+                <span *ngIf="!element.weight" style="opacity: 0.6">
+                  Peso não disponível
+                </span>
+                <span *ngIf="element.weight">
+                  {{ element.weight }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Type activities -->
+            <ng-container matColumnDef="type">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                class="text-align-right header-color"
+              >
+                Tipo
+              </th>
+              <td mat-cell *matCellDef="let element" class="text-align-right">
+                {{
+                  element.type === "text"
+                    ? "Texto"
+                    : element.type === "long_text"
+                    ? "Texto Longo"
+                    : element.type === "0_to_5"
+                    ? "Seleção (0 a 5)"
+                    : element.type === "0_to_100"
+                    ? "Números (0 a 100)"
+                    : element.type
+                }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="button_edit">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+              <td
+                mat-cell
+                *matCellDef="let element"
+                (click)="navigateToEditQuestion(element)"
+                class="action-cell"
+              >
+                <h3>
+                  <i
+                    matTooltip="Editar"
+                    class="mdi mdi-pencil"
+                    style="cursor: pointer"
+                  ></i
+                  ><span class="subtitle">Editar</span>
+                </h3>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="button_exclude">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+              <td
+                mat-cell
+                *matCellDef="let element"
+                (click)="openRemoveDialog(element)"
+                class="action-cell"
+              >
+                <h3>
+                  <i
+                    matTooltip="Deletar"
+                    class="mdi mdi-delete"
+                    style="cursor: pointer; padding-right: 0.3rem"
+                  ></i
+                  ><span class="subtitle">Deletar</span>
+                </h3>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div [hidden]="questions.length > 0 || loading">
+      Não existem perguntas cadastradas
+    </div>
+  </div>
+</div>
